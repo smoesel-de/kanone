@@ -82,6 +82,7 @@ function setupLights() {
 }
 
 let max;
+let initialRotation;
 
 function loadModel() {
 // Load a glTF resource
@@ -124,12 +125,12 @@ function loadModel() {
             max.position.set( -30, getY(-30), 0 );
             max.rotateY(Math.PI / 180 * 90);
             max.rotateX(Math.PI / 180 * (90-31.5));
-            console.log(max.children);
             max.scale.set( 0.15, 0.15, 0.15 );
             controls.target.set(max.position.x, max.position.y, max.position.z);
 
-            scene.add( max );
+            initialRotation = max.quaternion;
 
+            scene.add( max );
         },
         // called while loading is progressing
         function ( xhr ) {
@@ -145,12 +146,28 @@ function loadModel() {
         }
     );
 }
+document.querySelector('#reset').addEventListener('click', function () {
+    send = false;
+    max.updateMatrix();
 
-document.querySelector('.button').addEventListener('click', function () {
-    if (document.querySelector('.button').classList.contains('disabled')) {
+    max.position.set( -30, getY(-30), 0 );
+    max.rotation.set( 0, 0, 0 );
+    max.updateMatrix();
+
+    max.rotateY(Math.PI / 180 * 90);
+    max.rotateX(Math.PI / 180 * (90-31.5));
+    controls.target.set(max.position.x, max.position.y, max.position.z);
+
+    document.querySelector('#send').classList.remove('disabled');
+    document.querySelector('#reset').classList.add('disabled');
+});
+
+document.querySelector('#send').addEventListener('click', function () {
+    if (document.querySelector('#send').classList.contains('disabled')) {
         return;
     }
-    document.querySelector('.button').classList.add('disabled');
+
+    document.querySelector('#send').classList.add('disabled');
 
     var timeLeft = 3;
     var timer = setInterval(function(){
@@ -160,12 +177,13 @@ document.querySelector('.button').addEventListener('click', function () {
             clearInterval(timer);
             send = true;
             document.getElementById("countdown").innerText = "";
+            document.querySelector('#reset').classList.remove('disabled');
         }
 
         timeLeft -= 1;
 
     }, 1000);
-})
+});
 
 window.addEventListener("resize", function () {
     camera.aspect = window.innerWidth / window.innerHeight;
