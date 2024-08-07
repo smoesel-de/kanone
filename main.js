@@ -152,12 +152,19 @@ document.querySelector('.button').addEventListener('click', function () {
     }
     document.querySelector('.button').classList.add('disabled');
 
-    send = true;
+    var timeLeft = 3;
+    var timer = setInterval(function(){
+        document.getElementById("countdown").innerText = timeLeft + "...";
 
-    // setTimeout(function () {
-    //     document.querySelector('.button').classList.remove('disabled');
-    //     document.querySelector('.button').innerHTML = 'Send';
-    // }, 3000)
+        if(timeLeft <= 0){
+            clearInterval(timer);
+            send = true;
+            document.getElementById("countdown").innerText = "";
+        }
+
+        timeLeft -= 1;
+
+    }, 1000);
 })
 
 window.addEventListener("resize", function () {
